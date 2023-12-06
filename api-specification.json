@@ -1,0 +1,297 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Nim Game Server API",
+    "description": "This is the documentation for a simple game server backend that allows to play\nthe game Nim.",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "game"
+    }
+  ],
+  "paths": {
+    "/game/new": {
+      "post": {
+        "tags": [
+          "game"
+        ],
+        "summary": "Creates a new game",
+        "description": "Will create a new game. The request body can be used to supply custom rules for the new game",
+        "requestBody": {
+          "description": "Optional rules",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "matches": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 10
+                  },
+                  "allowedMoves": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "example": [
+                      1,
+                      2,
+                      3
+                    ]
+                  },
+                  "computerStrategy": {
+                    "type": "string",
+                    "enum": [
+                      "RANDOM",
+                      "DP"
+                    ],
+                    "example": "RANDOM"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Game created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Game"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Computer Strategy is not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/game/makeMove": {
+      "post": {
+        "tags": [
+          "game"
+        ],
+        "summary": "Makes a move of the game",
+        "description": "Request body contains the mov made by the player and the game id, returns game with new state",
+        "requestBody": {
+          "description": "Description of the move of the player",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "nMatches"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "d16712ec-6e12-4999-a9f8-ae06302cc16b"
+                  },
+                  "nMatches": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Move was legal, computer made its turn. Returns the new game state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Game"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The move submitted was not legal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The game id was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Some fields are missing or not correct, message contains more information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/game/get": {
+      "get": {
+        "tags": [
+          "game"
+        ],
+        "summary": "Gets a Game Entity by ID",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Id found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Game"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Id not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Id not understood",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Game": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "d16712ec-6e12-4999-a9f8-ae06302cc16b"
+          },
+          "currentState": {
+            "$ref": "#/components/schemas/GameState"
+          },
+          "allowedMoves": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          },
+          "computerPlayerStrategy": {
+            "type": "string",
+            "enum": [
+              "RANDOM",
+              "DP"
+            ]
+          },
+          "winner": {
+            "type": "string",
+            "enum": [
+              "none",
+              "Player",
+              "Computer"
+            ]
+          }
+        }
+      },
+      "GameState": {
+        "type": "object",
+        "properties": {
+          "numMatches": {
+            "type": "integer",
+            "format": "int64",
+            "example": 13
+          },
+          "turn": {
+            "type": "integer",
+            "format": "int64",
+            "example": 0
+          },
+          "playersTurn": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "APIResponse": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int64",
+            "example": 404
+          },
+          "error": {
+            "type": "string",
+            "example": "Not found"
+          },
+          "message": {
+            "type": "string",
+            "example": "No game with ID d16712ec-6e12-4999-a9f8-ae06302cc16b"
+          },
+          "path": {
+            "type": "string",
+            "example": "/game/makeMove"
+          }
+        }
+      }
+    }
+  }
+}
