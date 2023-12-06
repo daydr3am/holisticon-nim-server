@@ -21,8 +21,8 @@ execute
 It will start the server at `localhost:8080`
 
 ## Usage
-The documentation of the API interface can be found in
-api-specification.json.
+The specification of the API interface can be found in
+`api-specification.json`.
 
 ### Creating a game
 To create a game, POST a JSON request to the `/game/new` endpoint. An example
