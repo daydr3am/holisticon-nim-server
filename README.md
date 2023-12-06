@@ -10,8 +10,8 @@ the players turn.
 
 ## Setup
 
-As already mentioned, the application is using gradle. Therefore, you will need
-JDK. The Server was tested with Java 17. To run the server, 
+As already mentioned, the application is using gradle. Therefore, you will need some version of a
+JDK. The Server was tested with Java 20. To run the server, 
 execute 
 
 ```
