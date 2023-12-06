@@ -10,7 +10,7 @@ the players turn.
 
 ## Setup
 
-As already mentioned, the application is using gradle. Therefore, you will need some version of a
+As already mentioned, the application is using gradle. You will need some version of a
 JDK. The Server was tested with Java 20. To run the server, 
 execute 
 
